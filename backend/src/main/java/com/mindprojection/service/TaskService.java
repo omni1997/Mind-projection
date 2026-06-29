@@ -67,7 +67,7 @@ public class TaskService {
     }
 
     public TaskDto toDto(Task t) {
-        var tickets = t.getTickets() == null ? java.util.List.of() :
+        List<TicketRefDto> tickets = t.getTickets() == null ? List.of() :
                 t.getTickets().stream()
                         .map(ProjectService::toTicketRef)
                         .toList();

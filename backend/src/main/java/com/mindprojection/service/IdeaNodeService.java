@@ -71,7 +71,7 @@ public class IdeaNodeService {
                 n.getTasks().stream()
                         .sorted(java.util.Comparator.comparingInt(Task::getPosition))
                         .map(t -> {
-                            var ticketRefs = t.getTickets() == null ? List.of() :
+                            List<TicketRefDto> ticketRefs = t.getTickets() == null ? List.of() :
                                     t.getTickets().stream().map(ProjectService::toTicketRef).toList();
                             return new TaskDto(t.getId(), n.getId(), t.getTitle(),
                                 t.getCompleted(), t.getPosition(), ticketRefs, t.getCreatedAt(), t.getUpdatedAt());
