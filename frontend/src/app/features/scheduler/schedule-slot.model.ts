@@ -5,6 +5,8 @@ export interface ScheduleSlot {
   startTime: string;
   endTime: string;
   recurrence: string | null;
+  ideaNodeId: number | null;
+  ideaNodeTitle: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -15,6 +17,5 @@ export interface ScheduleSlotRequest {
   startTime: string;
   endTime: string;
   recurrence?: string | null;
+  ideaNodeId?: number | null;
 }
-
-export type Recurrence = 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY';

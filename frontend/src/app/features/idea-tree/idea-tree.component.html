@@ -1,7 +1,7 @@
 <div class="idea-tree-page">
   <header class="page-header">
     <h1>💡 Idea Tree</h1>
-    <p class="subtitle">Organisez vos idées en arbre hiérarchique</p>
+    <p class="subtitle">Organize your ideas in a hierarchical tree</p>
   </header>
 
   <div class="add-root">
@@ -9,20 +9,20 @@
       [ngModel]="newRootTitle()"
       (ngModelChange)="newRootTitle.set($event)"
       class="input-root"
-      placeholder="Nouvelle idée racine..."
+      placeholder="New root idea..."
       (keyup.enter)="addRoot()"
     />
     <button class="btn-root" (click)="addRoot()" [disabled]="!newRootTitle().trim()">
-      + Ajouter
+      + Add
     </button>
   </div>
 
   @if (loading()) {
-    <div class="loading">Chargement...</div>
+    <div class="loading">Loading...</div>
   } @else if (tree().length === 0) {
     <div class="empty">
-      <p>Aucune idée pour l'instant.</p>
-      <p>Commencez par ajouter une idée racine ci-dessus !</p>
+      <p>No ideas yet.</p>
+      <p>Start by adding a root idea above!</p>
     </div>
   } @else {
     <div class="tree-container">
@@ -32,6 +32,7 @@
           (addChild)="onAddChild($event)"
           (editNode)="onEditNode($event)"
           (deleteNode)="onDeleteNode($event)"
+          (scheduleNode)="onScheduleNode($event)"
         />
       }
     </div>

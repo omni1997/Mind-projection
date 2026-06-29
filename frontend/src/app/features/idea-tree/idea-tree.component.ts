@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IdeaNodeService } from './idea-node.service';
 import { IdeaNodeComponent } from './idea-node/idea-node.component';
 import { IdeaNode } from './idea-node.model';
@@ -13,17 +14,21 @@ import { IdeaNode } from './idea-node.model';
   styleUrl: './idea-tree.component.scss'
 })
 export class IdeaTreeComponent implements OnInit {
-  private svc = inject(IdeaNodeService);
+  private svc    = inject(IdeaNodeService);
+  private router = inject(Router);
 
-  tree    = signal<IdeaNode[]>([]);
-  loading = signal(false);
+  tree         = signal<IdeaNode[]>([]);
+  loading      = signal(false);
   newRootTitle = signal('');
 
   ngOnInit() { this.load(); }
 
   load() {
     this.loading.set(true);
-    this.svc.getTree().subscribe({ next: t => { this.tree.set(t); this.loading.set(false); }, error: () => this.loading.set(false) });
+    this.svc.getTree().subscribe({
+      next: t => { this.tree.set(t); this.loading.set(false); },
+      error: () => this.loading.set(false)
+    });
   }
 
   addRoot() {
@@ -44,6 +49,10 @@ export class IdeaTreeComponent implements OnInit {
 
   onDeleteNode(id: number) {
     this.svc.delete(id).subscribe(() => this.load());
+  }
+
+  onScheduleNode(ideaNodeId: number) {
+    this.router.navigate(['/scheduler'], { queryParams: { ideaNodeId } });
   }
 
   private findNode(nodes: IdeaNode[], id: number): IdeaNode | null {

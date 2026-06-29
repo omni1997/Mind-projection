@@ -1,9 +1,12 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { FloorPipe } from '../../shared/floor.pipe';
 import { ScheduleSlotService } from './schedule-slot.service';
 import { ScheduleSlot, ScheduleSlotRequest } from './schedule-slot.model';
+import { IdeaNodeService } from '../idea-tree/idea-node.service';
+import { IdeaNode } from '../idea-tree/idea-node.model';
 
 interface SlotForm {
   title: string;
@@ -12,6 +15,7 @@ interface SlotForm {
   startHour: number;
   endHour: number;
   recurrence: string;
+  ideaNodeId: number | null;
 }
 
 interface CalendarSlot {
@@ -29,13 +33,16 @@ interface CalendarSlot {
   styleUrl: './scheduler.component.scss'
 })
 export class SchedulerComponent implements OnInit {
-  private svc = inject(ScheduleSlotService);
+  private svc     = inject(ScheduleSlotService);
+  private ideaSvc = inject(IdeaNodeService);
+  private route   = inject(ActivatedRoute);
 
-  weekStart   = signal(this.getMonday(new Date()));
-  slots       = signal<ScheduleSlot[]>([]);
-  showForm    = signal(false);
-  editingId   = signal<number | null>(null);
-  loading     = signal(false);
+  weekStart  = signal(this.getMonday(new Date()));
+  slots      = signal<ScheduleSlot[]>([]);
+  ideaNodes  = signal<IdeaNode[]>([]);
+  showForm   = signal(false);
+  editingId  = signal<number | null>(null);
+  loading    = signal(false);
 
   form: SlotForm = this.emptyForm();
 
@@ -52,15 +59,15 @@ export class SchedulerComponent implements OnInit {
 
   weekLabel = computed(() => {
     const days = this.weekDays();
-    const fmt = (d: Date) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    const fmt = (d: Date) => d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
     return `${fmt(days[0])} – ${fmt(days[6])} ${days[0].getFullYear()}`;
   });
 
   calendarSlots = computed<CalendarSlot[]>(() => {
     const days = this.weekDays();
     return this.slots().flatMap(slot => {
-      const start = new Date(slot.startTime);
-      const end   = new Date(slot.endTime);
+      const start    = new Date(slot.startTime);
+      const end      = new Date(slot.endTime);
       const dayIndex = days.findIndex(d => this.sameDay(d, start));
       if (dayIndex === -1) return [];
       const startRow = start.getHours() * 2 + (start.getMinutes() >= 30 ? 1 : 0);
@@ -69,11 +76,27 @@ export class SchedulerComponent implements OnInit {
     });
   });
 
-  ngOnInit() { this.load(); }
+  flatIdeas = computed<{ id: number; label: string }[]>(() => {
+    const flatten = (nodes: IdeaNode[], depth = 0): { id: number; label: string }[] =>
+      nodes.flatMap(n => [
+        { id: n.id, label: '  '.repeat(depth) + n.title },
+        ...flatten(n.children, depth + 1)
+      ]);
+    return flatten(this.ideaNodes());
+  });
+
+  ngOnInit() {
+    this.load();
+    this.ideaSvc.getTree().subscribe(t => {
+      this.ideaNodes.set(t);
+      const ideaNodeId = this.route.snapshot.queryParamMap.get('ideaNodeId');
+      if (ideaNodeId) this.openCreate(undefined, undefined, +ideaNodeId);
+    });
+  }
 
   load() {
     this.loading.set(true);
-    const days = this.weekDays();
+    const days  = this.weekDays();
     const start = new Date(days[0]); start.setHours(0, 0, 0, 0);
     const end   = new Date(days[6]); end.setHours(23, 59, 59, 999);
     this.svc.getByRange(start, end).subscribe({
@@ -86,14 +109,15 @@ export class SchedulerComponent implements OnInit {
   nextWeek() { this.weekStart.update(d => { const n = new Date(d); n.setDate(d.getDate() + 7); return n; }); this.load(); }
   goToday()  { this.weekStart.set(this.getMonday(new Date())); this.load(); }
 
-  openCreate(dayIndex?: number, hour?: number) {
+  openCreate(dayIndex?: number, hour?: number, ideaNodeId?: number) {
     this.form = this.emptyForm();
     if (dayIndex !== undefined && hour !== undefined) {
       const day = this.weekDays()[dayIndex];
-      this.form.date = this.toDateInput(day);
+      this.form.date      = this.toDateInput(day);
       this.form.startHour = hour;
       this.form.endHour   = Math.min(hour + 1, 23);
     }
+    if (ideaNodeId) this.form.ideaNodeId = ideaNodeId;
     this.editingId.set(null);
     this.showForm.set(true);
   }
@@ -102,12 +126,13 @@ export class SchedulerComponent implements OnInit {
     const start = new Date(slot.startTime);
     const end   = new Date(slot.endTime);
     this.form = {
-      title: slot.title,
+      title:       slot.title,
       description: slot.description ?? '',
-      date: this.toDateInput(start),
-      startHour: start.getHours(),
-      endHour: end.getHours() || 23,
-      recurrence: slot.recurrence ?? 'NONE'
+      date:        this.toDateInput(start),
+      startHour:   start.getHours(),
+      endHour:     end.getHours() || 23,
+      recurrence:  slot.recurrence ?? '',
+      ideaNodeId:  slot.ideaNodeId ?? null
     };
     this.editingId.set(slot.id);
     this.showForm.set(true);
@@ -116,15 +141,12 @@ export class SchedulerComponent implements OnInit {
   save() {
     if (!this.form.title.trim() || !this.form.date) return;
     const req = this.buildRequest();
-    const id = this.editingId();
-    const obs = id ? this.svc.update(id, req) : this.svc.create(req);
-    obs.subscribe(() => { this.showForm.set(false); this.load(); });
+    const id  = this.editingId();
+    const obs$ = id ? this.svc.update(id, req) : this.svc.create(req);
+    (obs$ as any).subscribe(() => { this.showForm.set(false); this.load(); });
   }
 
-  deleteSlot(id: number) {
-    this.svc.delete(id).subscribe(() => this.load());
-  }
-
+  deleteSlot(id: number) { this.svc.delete(id).subscribe(() => this.load()); }
   cancel() { this.showForm.set(false); }
 
   slotsForCell(dayIndex: number, hour: number): CalendarSlot[] {
@@ -132,7 +154,6 @@ export class SchedulerComponent implements OnInit {
   }
 
   isToday(d: Date): boolean { return this.sameDay(d, new Date()); }
-
   formatHour(h: number): string { return `${String(h).padStart(2, '0')}:00`; }
 
   private buildRequest(): ScheduleSlotRequest {
@@ -140,22 +161,22 @@ export class SchedulerComponent implements OnInit {
     const start = new Date(y, m - 1, d, this.form.startHour, 0);
     const end   = new Date(y, m - 1, d, this.form.endHour,   0);
     return {
-      title: this.form.title.trim(),
+      title:       this.form.title.trim(),
       description: this.form.description || null,
-      startTime: start.toISOString(),
-      endTime: end.toISOString(),
-      recurrence: this.form.recurrence === 'NONE' ? null : this.form.recurrence
+      startTime:   start.toISOString(),
+      endTime:     end.toISOString(),
+      recurrence:  this.form.recurrence || null,
+      ideaNodeId:  this.form.ideaNodeId || null
     };
   }
 
   private emptyForm(): SlotForm {
-    return { title: '', description: '', date: this.toDateInput(new Date()), startHour: 9, endHour: 10, recurrence: 'NONE' };
+    return { title: '', description: '', date: this.toDateInput(new Date()), startHour: 9, endHour: 10, recurrence: '', ideaNodeId: null };
   }
 
   private getMonday(d: Date): Date {
     const date = new Date(d);
-    const day = date.getDay();
-    const diff = (day === 0 ? -6 : 1 - day);
+    const diff = (date.getDay() === 0 ? -6 : 1 - date.getDay());
     date.setDate(date.getDate() + diff);
     date.setHours(0, 0, 0, 0);
     return date;

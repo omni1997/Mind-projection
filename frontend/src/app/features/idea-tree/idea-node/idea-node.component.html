@@ -8,10 +8,10 @@
     @if (editing()) {
       <div class="edit-form">
         <input [ngModel]="editTitle()" (ngModelChange)="editTitle.set($event)"
-               class="input-title" placeholder="Titre"
+               class="input-title" placeholder="Title"
                (keyup.enter)="confirmEdit()" (keyup.escape)="cancelEdit()" autofocus />
         <input [ngModel]="editContent()" (ngModelChange)="editContent.set($event)"
-               class="input-content" placeholder="Contenu (optionnel)"
+               class="input-content" placeholder="Content (optional)"
                (keyup.escape)="cancelEdit()" />
         <button class="btn btn-confirm" (click)="confirmEdit()">✓</button>
         <button class="btn btn-cancel"  (click)="cancelEdit()">✕</button>
@@ -22,9 +22,10 @@
         <span class="node-content">{{ node().content }}</span>
       }
       <div class="node-actions">
-        <button class="btn btn-add"    title="Ajouter enfant" (click)="startAddChild()">+</button>
-        <button class="btn btn-edit"   title="Modifier"       (click)="startEdit()">✎</button>
-        <button class="btn btn-delete" title="Supprimer"      (click)="deleteNode.emit(node().id)">✕</button>
+        <button class="btn btn-add"      title="Add child"  (click)="startAddChild()">+</button>
+        <button class="btn btn-schedule" title="Schedule"   (click)="scheduleNode.emit(node().id)">📅</button>
+        <button class="btn btn-edit"     title="Edit"       (click)="startEdit()">✎</button>
+        <button class="btn btn-delete"   title="Delete"     (click)="deleteNode.emit(node().id)">✕</button>
       </div>
     }
   </div>
@@ -32,7 +33,7 @@
   @if (addingChild()) {
     <div class="add-child-form">
       <input [ngModel]="newChildTitle()" (ngModelChange)="newChildTitle.set($event)"
-             class="input-title" placeholder="Nouvelle idée..."
+             class="input-title" placeholder="New idea..."
              (keyup.enter)="confirmAddChild()" (keyup.escape)="cancelAddChild()" autofocus />
       <button class="btn btn-confirm" (click)="confirmAddChild()">✓</button>
       <button class="btn btn-cancel"  (click)="cancelAddChild()">✕</button>
@@ -47,6 +48,7 @@
           (addChild)="onAddChild($event)"
           (editNode)="onEditNode($event)"
           (deleteNode)="onDeleteNode($event)"
+          (scheduleNode)="scheduleNode.emit($event)"
         />
       }
     </div>

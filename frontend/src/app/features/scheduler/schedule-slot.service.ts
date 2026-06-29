@@ -15,8 +15,8 @@ export class ScheduleSlotService {
     return this.http.get<ScheduleSlot[]>(this.base, { params });
   }
 
-  create(req: ScheduleSlotRequest): Observable<ScheduleSlot> {
-    return this.http.post<ScheduleSlot>(this.base, req);
+  create(req: ScheduleSlotRequest): Observable<ScheduleSlot[]> {
+    return this.http.post<ScheduleSlot[]>(this.base, req);
   }
 
   update(id: number, req: ScheduleSlotRequest): Observable<ScheduleSlot> {

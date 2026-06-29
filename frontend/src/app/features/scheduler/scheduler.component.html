@@ -1,31 +1,27 @@
 <div class="scheduler-page">
 
-  <!-- Header -->
   <header class="page-header">
     <h1>📅 Scheduler</h1>
     <div class="nav-controls">
       <button class="btn btn-outline" (click)="prevWeek()">‹</button>
-      <button class="btn btn-outline" (click)="goToday()">Aujourd'hui</button>
+      <button class="btn btn-outline" (click)="goToday()">Today</button>
       <button class="btn btn-outline" (click)="nextWeek()">›</button>
       <span class="week-label">{{ weekLabel() }}</span>
     </div>
-    <button class="btn btn-primary" (click)="openCreate()">+ Créneau</button>
+    <button class="btn btn-primary" (click)="openCreate()">+ Slot</button>
   </header>
 
-  <!-- Calendrier semaine -->
   <div class="calendar-wrapper">
     <div class="calendar">
 
-      <!-- En-tête jours -->
       <div class="col-time"></div>
-      @for (day of weekDays(); track day.toISOString(); let i = $index) {
+      @for (day of weekDays(); track day.toISOString()) {
         <div class="col-day-header" [class.today]="isToday(day)">
-          <span class="day-name">{{ day.toLocaleDateString('fr-FR', { weekday: 'short' }) }}</span>
-          <span class="day-num"  [class.today-badge]="isToday(day)">{{ day.getDate() }}</span>
+          <span class="day-name">{{ day.toLocaleDateString('en-US', { weekday: 'short' }) }}</span>
+          <span class="day-num" [class.today-badge]="isToday(day)">{{ day.getDate() }}</span>
         </div>
       }
 
-      <!-- Lignes heures -->
       @for (hour of hours; track hour) {
         <div class="time-label">{{ formatHour(hour) }}</div>
         @for (day of weekDays(); track day.toISOString(); let di = $index) {
@@ -33,11 +29,15 @@
             @for (cs of slotsForCell(di, hour); track cs.slot.id) {
               <div class="slot-block"
                    [style.--span]="cs.rowSpan"
+                   [class.has-idea]="cs.slot.ideaNodeId"
                    (click)="$event.stopPropagation(); openEdit(cs.slot)">
                 <span class="slot-title">{{ cs.slot.title }}</span>
-                <span class="slot-time">
-                  {{ formatHour(cs.startRow / 2 | floor) }}–{{ formatHour(cs.startRow / 2 + cs.rowSpan / 2 | floor) }}
-                </span>
+                @if (cs.slot.ideaNodeTitle) {
+                  <span class="slot-idea">💡 {{ cs.slot.ideaNodeTitle }}</span>
+                }
+                @if (cs.slot.recurrence) {
+                  <span class="slot-recurrence">↻ {{ cs.slot.recurrence | lowercase }}</span>
+                }
                 <button class="slot-delete" (click)="$event.stopPropagation(); deleteSlot(cs.slot.id)">✕</button>
               </div>
             }
@@ -47,53 +47,59 @@
     </div>
   </div>
 
-  <!-- Modal formulaire -->
   @if (showForm()) {
     <div class="modal-backdrop" (click)="cancel()">
       <div class="modal" (click)="$event.stopPropagation()">
-        <h2>{{ editingId() ? 'Modifier le créneau' : 'Nouveau créneau' }}</h2>
+        <h2>{{ editingId() ? 'Edit slot' : 'New slot' }}</h2>
 
-        <label>Titre *
-          <input [(ngModel)]="form.title" placeholder="Réunion, cours..." autofocus />
+        <label>Title *
+          <input [(ngModel)]="form.title" placeholder="Meeting, task..." autofocus />
         </label>
 
         <label>Description
-          <textarea [(ngModel)]="form.description" rows="2" placeholder="Détails optionnels..."></textarea>
+          <textarea [(ngModel)]="form.description" rows="2" placeholder="Optional details..."></textarea>
         </label>
 
         <div class="form-row">
           <label>Date *
             <input type="date" [(ngModel)]="form.date" />
           </label>
-          <label>Début
+          <label>Start
             <select [(ngModel)]="form.startHour">
-              @for (h of hours; track h) {
-                <option [value]="h">{{ formatHour(h) }}</option>
-              }
+              @for (h of hours; track h) { <option [value]="h">{{ formatHour(h) }}</option> }
             </select>
           </label>
-          <label>Fin
+          <label>End
             <select [(ngModel)]="form.endHour">
-              @for (h of hours; track h) {
-                <option [value]="h">{{ formatHour(h) }}</option>
-              }
+              @for (h of hours; track h) { <option [value]="h">{{ formatHour(h) }}</option> }
             </select>
           </label>
         </div>
 
-        <label>Récurrence
+        <label>Recurrence
           <select [(ngModel)]="form.recurrence">
-            <option value="NONE">Aucune</option>
-            <option value="DAILY">Quotidienne</option>
-            <option value="WEEKLY">Hebdomadaire</option>
-            <option value="MONTHLY">Mensuelle</option>
+            <option value="">None</option>
+            <option value="DAILY">Daily (30 days)</option>
+            <option value="WEEKLY">Weekly (12 weeks)</option>
+            <option value="MONTHLY">Monthly (12 months)</option>
           </select>
         </label>
 
+        @if (flatIdeas().length > 0) {
+          <label>Link to idea
+            <select [(ngModel)]="form.ideaNodeId">
+              <option [value]="null">— None —</option>
+              @for (idea of flatIdeas(); track idea.id) {
+                <option [value]="idea.id">{{ idea.label }}</option>
+              }
+            </select>
+          </label>
+        }
+
         <div class="modal-actions">
-          <button class="btn btn-outline" (click)="cancel()">Annuler</button>
+          <button class="btn btn-outline" (click)="cancel()">Cancel</button>
           <button class="btn btn-primary" (click)="save()" [disabled]="!form.title.trim()">
-            {{ editingId() ? 'Enregistrer' : 'Créer' }}
+            {{ editingId() ? 'Save' : 'Create' }}
           </button>
         </div>
       </div>
