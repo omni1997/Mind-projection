@@ -1,14 +1,8 @@
-$border: #e5e7eb;
-$today: #4f46e5;
-$slot-bg: #ede9fe;
-$slot-border: #7c3aed;
-
 .scheduler-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #f9fafb;
+  background: var(--bg-page);
 }
 
 .page-header {
@@ -16,11 +10,11 @@ $slot-border: #7c3aed;
   align-items: center;
   gap: 12px;
   padding: 16px 24px;
-  background: #fff;
-  border-bottom: 1px solid $border;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 
-  h1 { margin: 0; font-size: 22px; color: #1a1a2e; flex: 1; }
+  h1 { margin: 0; font-size: 22px; color: var(--text-primary); flex: 1; }
 }
 
 .nav-controls {
@@ -32,7 +26,7 @@ $slot-border: #7c3aed;
 .week-label {
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-secondary);
   min-width: 180px;
   text-align: center;
 }
@@ -46,11 +40,11 @@ $slot-border: #7c3aed;
   font-weight: 500;
   transition: background 0.15s;
 
-  &-primary { background: $today; color: #fff; &:hover { background: #3730a3; } &:disabled { background: #a5b4fc; cursor: not-allowed; } }
-  &-outline  { background: #fff; color: #374151; border: 1px solid $border; &:hover { background: #f3f4f6; } }
+  &-primary { background: var(--accent); color: #fff; &:hover { background: var(--accent-hover); } &:disabled { opacity: 0.5; cursor: not-allowed; } }
+  &-outline  { background: var(--bg-surface); color: var(--text-secondary); border: 1px solid var(--border); &:hover { background: var(--bg-tertiary); } }
 }
 
-/* Calendrier grid */
+/* Calendar grid */
 .calendar-wrapper {
   flex: 1;
   overflow-y: auto;
@@ -62,54 +56,54 @@ $slot-border: #7c3aed;
   min-width: 700px;
 }
 
-.col-time { background: #fff; border-bottom: 1px solid $border; }
+.col-time { background: var(--bg-surface); border-bottom: 1px solid var(--border); }
 
 .col-day-header {
   text-align: center;
   padding: 8px 4px;
-  background: #fff;
-  border-left: 1px solid $border;
-  border-bottom: 2px solid $border;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 2;
 
-  &.today { background: #f0f0ff; }
+  &.today { background: var(--bg-hover); }
 
-  .day-name { display: block; font-size: 11px; color: #9ca3af; text-transform: uppercase; }
-  .day-num  { display: inline-block; font-size: 18px; font-weight: 600; color: #111; margin-top: 2px;
-    &.today-badge { background: $today; color: #fff; border-radius: 50%; width: 32px; height: 32px; line-height: 32px; }
+  .day-name { display: block; font-size: 11px; color: var(--text-faint); text-transform: uppercase; }
+  .day-num  { display: inline-block; font-size: 18px; font-weight: 600; color: var(--text-primary); margin-top: 2px;
+    &.today-badge { background: var(--accent); color: #fff; border-radius: 50%; width: 32px; height: 32px; line-height: 32px; }
   }
 }
 
 .time-label {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--text-faint);
   text-align: right;
   padding: 4px 6px 0 0;
-  border-bottom: 1px solid $border;
-  background: #fff;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
   height: 48px;
   box-sizing: border-box;
 }
 
 .cell {
-  border-left: 1px solid $border;
-  border-bottom: 1px solid $border;
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   height: 48px;
   position: relative;
   cursor: pointer;
   transition: background 0.1s;
 
-  &:hover { background: #f5f3ff; }
+  &:hover { background: var(--accent-softer); }
 }
 
 .slot-block {
   position: absolute;
   inset: 2px;
   height: calc(var(--span) * 48px - 4px);
-  background: $slot-bg;
-  border-left: 3px solid $slot-border;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
   border-radius: 4px;
   padding: 4px 6px;
   cursor: pointer;
@@ -122,36 +116,37 @@ $slot-border: #7c3aed;
 
   &:hover { filter: brightness(0.95); }
 
-  .slot-title { font-size: 12px; font-weight: 600; color: #4c1d95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .slot-time  { font-size: 10px; color: #6d28d9; }
+  .slot-title { font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slot-time  { font-size: 10px; color: var(--text-muted); }
   .slot-delete {
     position: absolute; top: 2px; right: 4px;
-    background: none; border: none; color: #a78bfa; cursor: pointer; font-size: 10px; padding: 0;
-    &:hover { color: #7c3aed; }
+    background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 10px; padding: 0;
+    &:hover { color: var(--accent); }
   }
 }
 
 /* Modal */
 .modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: center; z-index: 100;
 }
 
 .modal {
-  background: #fff;
+  background: var(--bg-surface);
   border-radius: 12px;
   padding: 28px;
   width: 440px;
   max-width: 95vw;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 60px var(--shadow-md);
+  border: 1px solid var(--border);
 
-  h2 { margin: 0 0 20px; font-size: 18px; color: #1a1a2e; }
+  h2 { margin: 0 0 20px; font-size: 18px; color: var(--text-primary); }
 
   label {
     display: block;
     font-size: 13px;
     font-weight: 500;
-    color: #374151;
+    color: var(--text-secondary);
     margin-bottom: 14px;
 
     input, select, textarea {
@@ -159,12 +154,14 @@ $slot-border: #7c3aed;
       width: 100%;
       margin-top: 4px;
       padding: 8px 10px;
-      border: 1px solid $border;
+      border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 14px;
       box-sizing: border-box;
       outline: none;
-      &:focus { border-color: $today; }
+      background: var(--input-bg);
+      color: var(--text-primary);
+      &:focus { border-color: var(--accent); }
     }
     textarea { resize: vertical; font-family: inherit; }
   }

@@ -3,6 +3,9 @@
   <a routerLink="/idea-tree"  routerLinkActive="active">💡 Idea Tree</a>
   <a routerLink="/scheduler"  routerLinkActive="active">📅 Scheduler</a>
   <a routerLink="/projects"   routerLinkActive="active">📋 Projects</a>
+  <button class="theme-toggle" (click)="toggleTheme()" [title]="dark() ? 'Switch to light mode' : 'Switch to dark mode'">
+    {{ dark() ? '☀️' : '🌙' }}
+  </button>
 </nav>
 
 <main class="app-content">

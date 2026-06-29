@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -8,4 +8,21 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {}
+export class AppComponent {
+  dark = signal(localStorage.getItem('theme') === 'dark');
+
+  constructor() {
+    this.applyTheme(this.dark());
+  }
+
+  toggleTheme() {
+    const next = !this.dark();
+    this.dark.set(next);
+    this.applyTheme(next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  }
+
+  private applyTheme(dark: boolean) {
+    document.documentElement.classList.toggle('dark', dark);
+  }
+}
