@@ -1,0 +1,54 @@
+<div class="node-wrapper">
+  <div class="node-row">
+
+    <button class="toggle-btn" (click)="toggleCollapse()" [disabled]="!hasChildren()">
+      {{ hasChildren() ? (collapsed() ? '▶' : '▼') : '·' }}
+    </button>
+
+    @if (editing()) {
+      <div class="edit-form">
+        <input [ngModel]="editTitle()" (ngModelChange)="editTitle.set($event)"
+               class="input-title" placeholder="Titre"
+               (keyup.enter)="confirmEdit()" (keyup.escape)="cancelEdit()" autofocus />
+        <input [ngModel]="editContent()" (ngModelChange)="editContent.set($event)"
+               class="input-content" placeholder="Contenu (optionnel)"
+               (keyup.escape)="cancelEdit()" />
+        <button class="btn btn-confirm" (click)="confirmEdit()">✓</button>
+        <button class="btn btn-cancel"  (click)="cancelEdit()">✕</button>
+      </div>
+    } @else {
+      <span class="node-title" (dblclick)="startEdit()">{{ node().title }}</span>
+      @if (node().content) {
+        <span class="node-content">{{ node().content }}</span>
+      }
+      <div class="node-actions">
+        <button class="btn btn-add"    title="Ajouter enfant" (click)="startAddChild()">+</button>
+        <button class="btn btn-edit"   title="Modifier"       (click)="startEdit()">✎</button>
+        <button class="btn btn-delete" title="Supprimer"      (click)="deleteNode.emit(node().id)">✕</button>
+      </div>
+    }
+  </div>
+
+  @if (addingChild()) {
+    <div class="add-child-form">
+      <input [ngModel]="newChildTitle()" (ngModelChange)="newChildTitle.set($event)"
+             class="input-title" placeholder="Nouvelle idée..."
+             (keyup.enter)="confirmAddChild()" (keyup.escape)="cancelAddChild()" autofocus />
+      <button class="btn btn-confirm" (click)="confirmAddChild()">✓</button>
+      <button class="btn btn-cancel"  (click)="cancelAddChild()">✕</button>
+    </div>
+  }
+
+  @if (!collapsed() && hasChildren()) {
+    <div class="children">
+      @for (child of node().children; track child.id) {
+        <app-idea-node
+          [node]="child"
+          (addChild)="onAddChild($event)"
+          (editNode)="onEditNode($event)"
+          (deleteNode)="onDeleteNode($event)"
+        />
+      }
+    </div>
+  }
+</div>

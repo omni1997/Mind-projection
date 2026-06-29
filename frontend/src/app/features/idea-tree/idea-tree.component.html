@@ -1,0 +1,39 @@
+<div class="idea-tree-page">
+  <header class="page-header">
+    <h1>💡 Idea Tree</h1>
+    <p class="subtitle">Organisez vos idées en arbre hiérarchique</p>
+  </header>
+
+  <div class="add-root">
+    <input
+      [ngModel]="newRootTitle()"
+      (ngModelChange)="newRootTitle.set($event)"
+      class="input-root"
+      placeholder="Nouvelle idée racine..."
+      (keyup.enter)="addRoot()"
+    />
+    <button class="btn-root" (click)="addRoot()" [disabled]="!newRootTitle().trim()">
+      + Ajouter
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  } @else if (tree().length === 0) {
+    <div class="empty">
+      <p>Aucune idée pour l'instant.</p>
+      <p>Commencez par ajouter une idée racine ci-dessus !</p>
+    </div>
+  } @else {
+    <div class="tree-container">
+      @for (node of tree(); track node.id) {
+        <app-idea-node
+          [node]="node"
+          (addChild)="onAddChild($event)"
+          (editNode)="onEditNode($event)"
+          (deleteNode)="onDeleteNode($event)"
+        />
+      }
+    </div>
+  }
+</div>
