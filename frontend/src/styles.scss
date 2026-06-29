@@ -1,1 +1,67 @@
-/* You can add global styles to this file, and also import other style files */
+/* ─── Theme variables ─────────────────────────────────────────────────────── */
+:root {
+  --bg-page:       #f9fafb;
+  --bg-surface:    #ffffff;
+  --bg-secondary:  #f8f9ff;
+  --bg-tertiary:   #f3f4f6;
+  --bg-hover:      #f0f4ff;
+  --text-primary:  #1a1a2e;
+  --text-secondary:#374151;
+  --text-muted:    #6b7280;
+  --text-faint:    #9ca3af;
+  --border:        #e5e7eb;
+  --border-light:  #d1d5db;
+  --accent:        #4f46e5;
+  --accent-hover:  #3730a3;
+  --accent-soft:   #ede9fe;
+  --accent-softer: #f5f3ff;
+  --nav-bg:        #1a1a2e;
+  --nav-link:      #a5b4fc;
+  --shadow-sm:     rgba(0,0,0,0.06);
+  --shadow-md:     rgba(0,0,0,0.10);
+  --input-bg:      #ffffff;
+}
+
+html.dark {
+  --bg-page:       #0d0d1a;
+  --bg-surface:    #1a1a2e;
+  --bg-secondary:  #151526;
+  --bg-tertiary:   #1e1e32;
+  --bg-hover:      #23233a;
+  --text-primary:  #e5e7eb;
+  --text-secondary:#c9cdd4;
+  --text-muted:    #8b95a5;
+  --text-faint:    #5a6475;
+  --border:        #2d2d48;
+  --border-light:  #3a3a58;
+  --accent:        #6366f1;
+  --accent-hover:  #4f46e5;
+  --accent-soft:   #2e2b5e;
+  --accent-softer: #1e1b3e;
+  --nav-bg:        #0d0d1a;
+  --nav-link:      #818cf8;
+  --shadow-sm:     rgba(0,0,0,0.3);
+  --shadow-md:     rgba(0,0,0,0.4);
+  --input-bg:      #1e1e32;
+}
+
+/* ─── Global reset ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  color: inherit;
+}
+
+input, select, textarea {
+  background: var(--input-bg);
+  color: var(--text-primary);
+}

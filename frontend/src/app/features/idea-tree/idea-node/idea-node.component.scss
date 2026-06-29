@@ -11,8 +11,7 @@
   transition: background 0.15s;
 
   &:hover {
-    background: #f0f4ff;
-
+    background: var(--bg-hover);
     .node-actions { opacity: 1; }
   }
 }
@@ -23,26 +22,26 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
+  color: var(--text-muted);
   font-size: 10px;
   padding: 0;
   flex-shrink: 0;
 
-  &:disabled { cursor: default; color: #ccc; }
+  &:disabled { cursor: default; color: var(--border); }
 }
 
 .node-title {
   font-weight: 500;
-  color: #1a1a2e;
+  color: var(--text-primary);
   cursor: default;
   flex: 1;
 
-  &:hover { color: #4f46e5; }
+  &:hover { color: var(--accent); }
 }
 
 .node-content {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -66,11 +65,11 @@
 
   &-add      { background: #e8f5e9; color: #388e3c; &:hover { background: #c8e6c9; } }
   &-task     { background: #fef3c7; color: #b45309; &:hover { background: #fde68a; } }
-  &-schedule { background: #ede9fe; color: #7c3aed; &:hover { background: #ddd6fe; } }
+  &-schedule { background: var(--accent-soft); color: #7c3aed; &:hover { background: #ddd6fe; } }
   &-edit     { background: #e3f2fd; color: #1976d2; &:hover { background: #bbdefb; } }
   &-delete   { background: #fce4ec; color: #c62828; &:hover { background: #ffcdd2; } }
-  &-confirm  { background: #4f46e5; color: white;   &:hover { background: #3730a3; } }
-  &-cancel  { background: #e5e7eb; color: #374151; &:hover { background: #d1d5db; } }
+  &-confirm  { background: var(--accent); color: white; &:hover { background: var(--accent-hover); } }
+  &-cancel   { background: var(--bg-tertiary); color: var(--text-secondary); &:hover { background: var(--border); } }
 }
 
 .edit-form, .add-child-form, .add-task-form {
@@ -82,20 +81,24 @@
 
 .input-title {
   flex: 1;
-  border: 1px solid #4f46e5;
+  border: 1px solid var(--accent);
   border-radius: 4px;
   padding: 3px 8px;
   font-size: 14px;
   outline: none;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .input-content {
   flex: 1;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-light);
   border-radius: 4px;
   padding: 3px 8px;
   font-size: 13px;
   outline: none;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .add-child-form, .add-task-form {
@@ -117,13 +120,13 @@
   transition: background 0.1s;
 
   &:hover {
-    background: #fefce8;
+    background: var(--bg-hover);
     .task-delete { opacity: 1; }
   }
 
   &.completed .task-title {
     text-decoration: line-through;
-    color: #9ca3af;
+    color: var(--text-faint);
   }
 }
 
@@ -131,13 +134,13 @@
   width: 15px;
   height: 15px;
   cursor: pointer;
-  accent-color: #4f46e5;
+  accent-color: var(--accent);
 }
 
 .task-title {
   flex: 1;
   font-size: 13px;
-  color: #374151;
+  color: var(--text-secondary);
 }
 
 .task-delete {
@@ -149,7 +152,7 @@
 
 .children {
   margin-left: 20px;
-  border-left: 2px solid #e5e7eb;
+  border-left: 2px solid var(--border);
   padding-left: 8px;
 }
 
@@ -160,8 +163,8 @@
   align-items: center;
   gap: 2px;
   font-size: 11px;
-  background: #ede9fe;
-  color: #5b21b6;
+  background: var(--accent-soft);
+  color: var(--accent);
   border-radius: 10px;
   overflow: hidden;
 
@@ -178,7 +181,7 @@
   .badge-unlink {
     background: none;
     border: none;
-    color: #7c3aed;
+    color: var(--accent);
     cursor: pointer;
     font-size: 9px;
     padding: 0 5px 0 0;
@@ -189,10 +192,10 @@
 }
 
 .btn-link {
-  background: #f3f4f6;
-  color: #6b7280;
-  &:hover { background: #e0e7ff; color: #4f46e5; }
-  &.active { background: #4f46e5; color: white; }
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  &:hover { background: var(--accent-softer); color: var(--accent); }
+  &.active { background: var(--accent); color: white; }
 }
 
 .task-link { opacity: 0; transition: opacity 0.1s; }
@@ -201,10 +204,10 @@
 .ticket-picker {
   margin-left: 26px;
   margin-top: 2px;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px var(--shadow-md);
   max-height: 180px;
   overflow-y: auto;
   z-index: 10;
@@ -215,7 +218,7 @@
 .picker-empty {
   padding: 10px 14px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-faint);
 }
 
 .picker-item {
@@ -225,15 +228,15 @@
   padding: 7px 14px;
   background: none;
   border: none;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
   text-align: left;
   transition: background 0.1s;
 
   &:last-child { border-bottom: none; }
-  &:hover { background: #f5f3ff; }
+  &:hover { background: var(--accent-softer); }
 }
 
-.picker-project { font-size: 10px; color: #9ca3af; min-width: 60px; }
-.picker-title   { flex: 1; font-size: 12px; color: #1a1a2e; }
-.picker-status  { font-size: 10px; color: #6b7280; background: #f3f4f6; padding: 1px 6px; border-radius: 4px; }
+.picker-project { font-size: 10px; color: var(--text-faint); min-width: 60px; }
+.picker-title   { flex: 1; font-size: 12px; color: var(--text-primary); }
+.picker-status  { font-size: 10px; color: var(--text-muted); background: var(--bg-tertiary); padding: 1px 6px; border-radius: 4px; }
