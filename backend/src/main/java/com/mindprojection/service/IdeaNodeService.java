@@ -2,7 +2,9 @@ package com.mindprojection.service;
 
 import com.mindprojection.dto.IdeaNodeDto;
 import com.mindprojection.dto.IdeaNodeRequest;
+import com.mindprojection.dto.TaskDto;
 import com.mindprojection.model.IdeaNode;
+import com.mindprojection.model.Task;
 import com.mindprojection.repository.IdeaNodeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +66,12 @@ public class IdeaNodeService {
     }
 
     private IdeaNodeDto toDto(IdeaNode n) {
+        List<TaskDto> tasks = n.getTasks() == null ? List.of() :
+                n.getTasks().stream()
+                        .sorted(java.util.Comparator.comparingInt(Task::getPosition))
+                        .map(t -> new TaskDto(t.getId(), n.getId(), t.getTitle(),
+                                t.getCompleted(), t.getPosition(), t.getCreatedAt(), t.getUpdatedAt()))
+                        .toList();
         return new IdeaNodeDto(
                 n.getId(),
                 n.getTitle(),
@@ -71,6 +79,7 @@ public class IdeaNodeService {
                 n.getParent() != null ? n.getParent().getId() : null,
                 n.getPosition(),
                 n.getChildren().stream().map(this::toDto).toList(),
+                tasks,
                 n.getCreatedAt(),
                 n.getUpdatedAt()
         );

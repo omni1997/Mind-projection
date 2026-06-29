@@ -65,14 +65,15 @@
   transition: background 0.1s;
 
   &-add      { background: #e8f5e9; color: #388e3c; &:hover { background: #c8e6c9; } }
+  &-task     { background: #fef3c7; color: #b45309; &:hover { background: #fde68a; } }
   &-schedule { background: #ede9fe; color: #7c3aed; &:hover { background: #ddd6fe; } }
   &-edit     { background: #e3f2fd; color: #1976d2; &:hover { background: #bbdefb; } }
   &-delete   { background: #fce4ec; color: #c62828; &:hover { background: #ffcdd2; } }
-  &-confirm { background: #4f46e5; color: white;  &:hover { background: #3730a3; } }
+  &-confirm  { background: #4f46e5; color: white;   &:hover { background: #3730a3; } }
   &-cancel  { background: #e5e7eb; color: #374151; &:hover { background: #d1d5db; } }
 }
 
-.edit-form, .add-child-form {
+.edit-form, .add-child-form, .add-task-form {
   display: flex;
   gap: 6px;
   align-items: center;
@@ -97,9 +98,53 @@
   outline: none;
 }
 
-.add-child-form {
+.add-child-form, .add-task-form {
   margin-left: 26px;
   padding: 4px 6px;
+}
+
+.task-list {
+  margin-left: 26px;
+  padding: 2px 0 4px;
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: background 0.1s;
+
+  &:hover {
+    background: #fefce8;
+    .task-delete { opacity: 1; }
+  }
+
+  &.completed .task-title {
+    text-decoration: line-through;
+    color: #9ca3af;
+  }
+}
+
+.task-check {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: #4f46e5;
+}
+
+.task-title {
+  flex: 1;
+  font-size: 13px;
+  color: #374151;
+}
+
+.task-delete {
+  opacity: 0;
+  padding: 1px 5px;
+  font-size: 11px;
+  transition: opacity 0.1s;
 }
 
 .children {
