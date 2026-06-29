@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IdeaNode, Task, TicketRef } from '../idea-node.model';
 import { TaskService } from '../task.service';
+import { ProjectService } from '../../projects/project.service';
 
 @Component({
   selector: 'app-idea-node',
@@ -19,8 +20,9 @@ export class IdeaNodeComponent implements OnInit {
   deleteNode   = output<number>();
   scheduleNode = output<number>();
 
-  private taskSvc = inject(TaskService);
-  private router  = inject(Router);
+  private taskSvc    = inject(TaskService);
+  private projectSvc = inject(ProjectService);
+  private router     = inject(Router);
 
   collapsed   = signal(false);
   editing     = signal(false);
@@ -32,7 +34,9 @@ export class IdeaNodeComponent implements OnInit {
   newChildTitle = signal('');
   newTaskTitle  = signal('');
 
-  tasks = signal<Task[]>([]);
+  tasks        = signal<Task[]>([]);
+  linkingTaskId = signal<number | null>(null);
+  allTickets   = signal<(TicketRef & { projectName: string })[]>([]);
 
   hasChildren = computed(() => this.node().children.length > 0);
 
@@ -98,6 +102,41 @@ export class IdeaNodeComponent implements OnInit {
   deleteTask(task: Task) {
     this.taskSvc.delete(this.node().id, task.id).subscribe(() => {
       this.tasks.update(ts => ts.filter(t => t.id !== task.id));
+    });
+  }
+
+  openTicketPicker(task: Task) {
+    if (this.linkingTaskId() === task.id) { this.linkingTaskId.set(null); return; }
+    this.linkingTaskId.set(task.id);
+    this.projectSvc.getAll().subscribe(projects => {
+      const linked = task.tickets?.map(t => t.id) ?? [];
+      this.allTickets.set(
+        projects.flatMap(p => p.tickets
+          .filter(t => !linked.includes(t.id))
+          .map(t => ({ id: t.id, projectId: p.id, title: t.title, status: t.status, priority: t.priority, projectName: p.name }))
+        )
+      );
+    });
+  }
+
+  linkTicket(task: Task, ticketId: number, projectId: number) {
+    const found = this.allTickets().find(t => t.id === ticketId);
+    if (!found) return;
+    this.taskSvc.linkTicket(ticketId, task.id).subscribe(() => {
+      this.tasks.update(ts => ts.map(t => t.id === task.id
+        ? { ...t, tickets: [...(t.tickets ?? []), { id: found.id, projectId, title: found.title, status: found.status, priority: found.priority }] }
+        : t
+      ));
+      this.linkingTaskId.set(null);
+    });
+  }
+
+  unlinkTicket(task: Task, ticket: TicketRef) {
+    this.taskSvc.unlinkTicket(ticket.id, task.id).subscribe(() => {
+      this.tasks.update(ts => ts.map(t => t.id === task.id
+        ? { ...t, tickets: t.tickets.filter(tr => tr.id !== ticket.id) }
+        : t
+      ));
     });
   }
 

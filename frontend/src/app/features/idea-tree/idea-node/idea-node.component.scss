@@ -153,23 +153,87 @@
   padding-left: 8px;
 }
 
-.task-tickets { display: flex; gap: 4px; flex-wrap: wrap; }
+.task-tickets { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
 
 .ticket-badge {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   font-size: 11px;
-  padding: 1px 6px;
   background: #ede9fe;
   color: #5b21b6;
   border-radius: 10px;
-  cursor: pointer;
-  max-width: 120px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  .badge-label {
+    padding: 1px 5px 1px 6px;
+    cursor: pointer;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover { text-decoration: underline; }
+  }
+
+  .badge-unlink {
+    background: none;
+    border: none;
+    color: #7c3aed;
+    cursor: pointer;
+    font-size: 9px;
+    padding: 0 5px 0 0;
+    line-height: 1;
+    opacity: 0.6;
+    &:hover { opacity: 1; }
+  }
+}
+
+.btn-link {
+  background: #f3f4f6;
+  color: #6b7280;
+  &:hover { background: #e0e7ff; color: #4f46e5; }
+  &.active { background: #4f46e5; color: white; }
+}
+
+.task-link { opacity: 0; transition: opacity 0.1s; }
+.task-row:hover .task-link { opacity: 1; }
+
+.ticket-picker {
+  margin-left: 26px;
+  margin-top: 2px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.picker-empty {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  text-align: left;
   transition: background 0.1s;
 
-  &:hover { background: #ddd6fe; }
+  &:last-child { border-bottom: none; }
+  &:hover { background: #f5f3ff; }
 }
+
+.picker-project { font-size: 10px; color: #9ca3af; min-width: 60px; }
+.picker-title   { flex: 1; font-size: 12px; color: #1a1a2e; }
+.picker-status  { font-size: 10px; color: #6b7280; background: #f3f4f6; padding: 1px 6px; border-radius: 4px; }

@@ -190,7 +190,25 @@
 
 .ticket-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; }
 .priority-badge { font-weight: 600; }
-.task-count { color: #6b7280; }
+
+.linked-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.linked-task {
+  font-size: 11px;
+  color: #6b7280;
+  padding: 1px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.done { color: #9ca3af; text-decoration: line-through; }
+}
 
 .status-actions {
   display: flex;

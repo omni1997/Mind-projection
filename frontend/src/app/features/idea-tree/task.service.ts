@@ -24,4 +24,12 @@ export class TaskService {
   delete(nodeId: number, taskId: number): Observable<void> {
     return this.http.delete<void>(`${this.base(nodeId)}/${taskId}`);
   }
+
+  linkTicket(ticketId: number, taskId: number): Observable<void> {
+    return this.http.post<void>(`/api/v1/tickets/${ticketId}/tasks/${taskId}`, {});
+  }
+
+  unlinkTicket(ticketId: number, taskId: number): Observable<void> {
+    return this.http.delete<void>(`/api/v1/tickets/${ticketId}/tasks/${taskId}`);
+  }
 }
