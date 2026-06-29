@@ -3,6 +3,7 @@ package com.mindprojection.service;
 import com.mindprojection.dto.IdeaNodeDto;
 import com.mindprojection.dto.IdeaNodeRequest;
 import com.mindprojection.dto.TaskDto;
+import com.mindprojection.dto.TicketRefDto;
 import com.mindprojection.model.IdeaNode;
 import com.mindprojection.model.Task;
 import com.mindprojection.repository.IdeaNodeRepository;
@@ -69,8 +70,12 @@ public class IdeaNodeService {
         List<TaskDto> tasks = n.getTasks() == null ? List.of() :
                 n.getTasks().stream()
                         .sorted(java.util.Comparator.comparingInt(Task::getPosition))
-                        .map(t -> new TaskDto(t.getId(), n.getId(), t.getTitle(),
-                                t.getCompleted(), t.getPosition(), t.getCreatedAt(), t.getUpdatedAt()))
+                        .map(t -> {
+                            List<TicketRefDto> ticketRefs = t.getTickets() == null ? List.of() :
+                                    t.getTickets().stream().map(ProjectService::toTicketRef).toList();
+                            return new TaskDto(t.getId(), n.getId(), t.getTitle(),
+                                t.getCompleted(), t.getPosition(), ticketRefs, t.getCreatedAt(), t.getUpdatedAt());
+                        })
                         .toList();
         return new IdeaNodeDto(
                 n.getId(),

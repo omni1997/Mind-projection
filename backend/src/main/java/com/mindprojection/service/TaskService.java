@@ -2,6 +2,7 @@ package com.mindprojection.service;
 
 import com.mindprojection.dto.TaskDto;
 import com.mindprojection.dto.TaskRequest;
+import com.mindprojection.dto.TicketRefDto;
 import com.mindprojection.model.IdeaNode;
 import com.mindprojection.model.Task;
 import com.mindprojection.repository.IdeaNodeRepository;
@@ -66,8 +67,12 @@ public class TaskService {
     }
 
     public TaskDto toDto(Task t) {
+        List<TicketRefDto> tickets = t.getTickets() == null ? List.of() :
+                t.getTickets().stream()
+                        .map(ProjectService::toTicketRef)
+                        .toList();
         return new TaskDto(t.getId(), t.getIdeaNode().getId(),
-                t.getTitle(), t.getCompleted(), t.getPosition(),
+                t.getTitle(), t.getCompleted(), t.getPosition(), tickets,
                 t.getCreatedAt(), t.getUpdatedAt());
     }
 }

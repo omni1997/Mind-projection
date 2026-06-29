@@ -3,13 +3,15 @@ package com.mindprojection.dto;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public record TaskDto(
+public record TicketDto(
         Long id,
-        Long ideaNodeId,
+        Long projectId,
         String title,
-        Boolean completed,
+        String description,
+        String status,
+        String priority,
         Integer position,
-        List<TicketRefDto> tickets,
+        List<TaskRefDto> tasks,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {}

@@ -1,0 +1,138 @@
+<div class="projects-page">
+
+  <!-- Sidebar: project list -->
+  <aside class="sidebar">
+    <h2 class="sidebar-title">📋 Projects</h2>
+
+    @if (loading()) {
+      <div class="loading">Loading...</div>
+    }
+
+    <ul class="project-list">
+      @for (p of projects(); track p.id) {
+        <li class="project-item" [class.active]="selectedId() === p.id" (click)="selectProject(p.id)">
+          <span class="project-name">{{ p.name }}</span>
+          <button class="icon-btn danger" (click)="$event.stopPropagation(); deleteProject(p.id)">✕</button>
+        </li>
+      }
+    </ul>
+
+    @if (addingProject()) {
+      <div class="new-project-form">
+        <input [ngModel]="newProjectName()" (ngModelChange)="newProjectName.set($event)"
+               placeholder="Project name..." (keyup.enter)="addProject()" (keyup.escape)="addingProject.set(false)" autofocus />
+        <button class="btn btn-confirm" (click)="addProject()">✓</button>
+        <button class="btn btn-cancel"  (click)="addingProject.set(false)">✕</button>
+      </div>
+    } @else {
+      <button class="btn-new-project" (click)="addingProject.set(true)">+ New project</button>
+    }
+  </aside>
+
+  <!-- Main: Kanban board -->
+  <main class="kanban">
+    @if (!selected()) {
+      <div class="empty-state">Select or create a project to get started.</div>
+    } @else {
+      <div class="kanban-header">
+        <h1>{{ selected()!.name }}</h1>
+        <button class="btn btn-primary" (click)="showTicketForm.set(true)">+ New ticket</button>
+      </div>
+
+      @if (showTicketForm()) {
+        <div class="ticket-form-card">
+          <input [ngModel]="ticketFormTitle()" (ngModelChange)="ticketFormTitle.set($event)"
+                 placeholder="Ticket title..." class="input-title" autofocus />
+          <input [ngModel]="ticketFormDesc()" (ngModelChange)="ticketFormDesc.set($event)"
+                 placeholder="Description (optional)" class="input-desc" />
+          <div class="form-row">
+            <select [ngModel]="ticketFormPrio()" (ngModelChange)="ticketFormPrio.set($event)">
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+            </select>
+            <select [ngModel]="ticketFormStatus()" (ngModelChange)="ticketFormStatus.set($event)">
+              @for (s of STATUSES; track s) {
+                <option [value]="s">{{ STATUS_LABELS[s] }}</option>
+              }
+            </select>
+            <button class="btn btn-confirm" (click)="addTicket()" [disabled]="!ticketFormTitle().trim()">Add</button>
+            <button class="btn btn-cancel"  (click)="resetTicketForm()">Cancel</button>
+          </div>
+        </div>
+      }
+
+      <div class="kanban-columns">
+        @for (status of STATUSES; track status) {
+          <div class="kanban-col">
+            <div class="col-header">
+              <span class="col-title">{{ STATUS_LABELS[status] }}</span>
+              <span class="col-count">{{ ticketsByStatus(status).length }}</span>
+            </div>
+            <div class="col-cards">
+              @for (ticket of ticketsByStatus(status); track ticket.id) {
+                <div class="ticket-card" [class.highlighted]="isHighlighted(ticket.id)" [id]="'ticket-' + ticket.id">
+
+                  @if (editingTicketId() === ticket.id) {
+                    <!-- Edit mode -->
+                    <div class="ticket-edit-form">
+                      <input [ngModel]="editTicketTitle()" (ngModelChange)="editTicketTitle.set($event)"
+                             class="input-title" placeholder="Title"
+                             (keyup.enter)="saveEditTicket(ticket)" (keyup.escape)="cancelEditTicket()" autofocus />
+                      <input [ngModel]="editTicketDesc()" (ngModelChange)="editTicketDesc.set($event)"
+                             class="input-desc" placeholder="Description (optional)" />
+                      <div class="form-row">
+                        <select [ngModel]="editTicketPrio()" (ngModelChange)="editTicketPrio.set($event)">
+                          <option value="LOW">Low</option>
+                          <option value="MEDIUM">Medium</option>
+                          <option value="HIGH">High</option>
+                        </select>
+                        <button class="btn btn-confirm" (click)="saveEditTicket(ticket)" [disabled]="!editTicketTitle().trim()">Save</button>
+                        <button class="btn btn-cancel"  (click)="cancelEditTicket()">Cancel</button>
+                      </div>
+                    </div>
+                  } @else {
+                    <!-- View mode -->
+                    <div class="ticket-top">
+                      <span class="ticket-title" (dblclick)="startEditTicket(ticket)">{{ ticket.title }}</span>
+                      <button class="icon-btn edit" (click)="startEditTicket(ticket)" title="Edit">✎</button>
+                      <button class="icon-btn danger" (click)="deleteTicket(ticket.id)" title="Delete">✕</button>
+                    </div>
+                    @if (ticket.description) {
+                      <p class="ticket-desc">{{ ticket.description }}</p>
+                    }
+                    <div class="ticket-meta">
+                      <span class="priority-badge" [style.color]="PRIORITY_COLORS[ticket.priority]">
+                        ● {{ ticket.priority }}
+                      </span>
+                    </div>
+                    @if (ticket.tasks.length > 0) {
+                      <div class="linked-tasks">
+                        @for (task of ticket.tasks; track task.id) {
+                          <span class="linked-task" [class.done]="task.completed">
+                            {{ task.completed ? '✓' : '○' }} {{ task.title }}
+                          </span>
+                        }
+                      </div>
+                    }
+                    <div class="status-actions">
+                      @for (s of STATUSES; track s) {
+                        <button class="status-btn" [class.active]="ticket.status === s"
+                                (click)="moveTicket(ticket, s)">
+                          {{ STATUS_LABELS[s] }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              @if (ticketsByStatus(status).length === 0) {
+                <div class="col-empty">No tickets</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

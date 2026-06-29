@@ -57,8 +57,38 @@
           <div class="task-row" [class.completed]="task.completed">
             <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)" class="task-check" />
             <span class="task-title">{{ task.title }}</span>
+
+            @if (task.tickets && task.tickets.length > 0) {
+              <span class="task-tickets">
+                @for (tr of task.tickets; track tr.id) {
+                  <span class="ticket-badge">
+                    <span class="badge-label" (click)="goToTicket(tr)" [title]="'Go to: ' + tr.title">🎫 {{ tr.title }}</span>
+                    <button class="badge-unlink" (click)="unlinkTicket(task, tr)" title="Unlink">✕</button>
+                  </span>
+                }
+              </span>
+            }
+
+            <button class="btn btn-link task-link" [class.active]="linkingTaskId() === task.id"
+                    title="Link to ticket" (click)="openTicketPicker(task)">🔗</button>
             <button class="btn btn-delete task-delete" title="Delete task" (click)="deleteTask(task)">✕</button>
           </div>
+
+          @if (linkingTaskId() === task.id) {
+            <div class="ticket-picker">
+              @if (allTickets().length === 0) {
+                <span class="picker-empty">No tickets available</span>
+              } @else {
+                @for (t of allTickets(); track t.id) {
+                  <button class="picker-item" (click)="linkTicket(task, t.id, t.projectId)">
+                    <span class="picker-project">{{ t.projectName }}</span>
+                    <span class="picker-title">{{ t.title }}</span>
+                    <span class="picker-status">{{ t.status }}</span>
+                  </button>
+                }
+              }
+            </div>
+          }
         }
       </div>
     }

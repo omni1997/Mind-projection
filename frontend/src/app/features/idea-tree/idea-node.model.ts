@@ -1,9 +1,12 @@
+export interface TicketRef { id: number; projectId: number; title: string; status: string; priority: string; }
+
 export interface Task {
   id: number;
   ideaNodeId: number;
   title: string;
   completed: boolean;
   position: number;
+  tickets: TicketRef[];
   createdAt: string;
   updatedAt: string;
 }
