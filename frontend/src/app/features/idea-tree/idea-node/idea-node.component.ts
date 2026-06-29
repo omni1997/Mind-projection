@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IdeaNode, Task } from '../idea-node.model';
+import { Router } from '@angular/router';
+import { IdeaNode, Task, TicketRef } from '../idea-node.model';
 import { TaskService } from '../task.service';
 
 @Component({
@@ -19,6 +20,7 @@ export class IdeaNodeComponent implements OnInit {
   scheduleNode = output<number>();
 
   private taskSvc = inject(TaskService);
+  private router  = inject(Router);
 
   collapsed   = signal(false);
   editing     = signal(false);
@@ -97,6 +99,10 @@ export class IdeaNodeComponent implements OnInit {
     this.taskSvc.delete(this.node().id, task.id).subscribe(() => {
       this.tasks.update(ts => ts.filter(t => t.id !== task.id));
     });
+  }
+
+  goToTicket(ticket: TicketRef) {
+    this.router.navigate(['/projects'], { queryParams: { ticketId: ticket.id } });
   }
 
   onAddChild(event: { parentId: number; title: string })                   { this.addChild.emit(event); }

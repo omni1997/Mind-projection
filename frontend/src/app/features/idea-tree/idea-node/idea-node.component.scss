@@ -152,3 +152,24 @@
   border-left: 2px solid #e5e7eb;
   padding-left: 8px;
 }
+
+.task-tickets { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.ticket-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  padding: 1px 6px;
+  background: #ede9fe;
+  color: #5b21b6;
+  border-radius: 10px;
+  cursor: pointer;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background 0.1s;
+
+  &:hover { background: #ddd6fe; }
+}

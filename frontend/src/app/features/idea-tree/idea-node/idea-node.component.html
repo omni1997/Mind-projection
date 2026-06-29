@@ -57,6 +57,13 @@
           <div class="task-row" [class.completed]="task.completed">
             <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)" class="task-check" />
             <span class="task-title">{{ task.title }}</span>
+            @if (task.tickets && task.tickets.length > 0) {
+              <span class="task-tickets">
+                @for (t of task.tickets; track t.id) {
+                  <span class="ticket-badge" (click)="goToTicket(t)" [title]="'Go to ticket: ' + t.title">🎫 {{ t.title }}</span>
+                }
+              </span>
+            }
             <button class="btn btn-delete task-delete" title="Delete task" (click)="deleteTask(task)">✕</button>
           </div>
         }
