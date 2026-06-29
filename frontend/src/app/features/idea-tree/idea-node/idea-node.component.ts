@@ -6,7 +6,7 @@ import { IdeaNode } from '../idea-node.model';
 @Component({
   selector: 'app-idea-node',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IdeaNodeComponent],
   templateUrl: './idea-node.component.html',
   styleUrl: './idea-node.component.scss'
 })
