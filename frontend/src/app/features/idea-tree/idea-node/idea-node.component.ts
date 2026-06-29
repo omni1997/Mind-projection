@@ -11,17 +11,18 @@ import { IdeaNode } from '../idea-node.model';
   styleUrl: './idea-node.component.scss'
 })
 export class IdeaNodeComponent {
-  node = input.required<IdeaNode>();
-  addChild   = output<{ parentId: number; title: string }>();
-  editNode   = output<{ id: number; title: string; content: string | null }>();
-  deleteNode = output<number>();
+  node         = input.required<IdeaNode>();
+  addChild     = output<{ parentId: number; title: string }>();
+  editNode     = output<{ id: number; title: string; content: string | null }>();
+  deleteNode   = output<number>();
+  scheduleNode = output<number>();
 
-  collapsed  = signal(false);
-  editing    = signal(false);
+  collapsed   = signal(false);
+  editing     = signal(false);
   addingChild = signal(false);
 
-  editTitle   = signal('');
-  editContent = signal('');
+  editTitle     = signal('');
+  editContent   = signal('');
   newChildTitle = signal('');
 
   hasChildren = computed(() => this.node().children.length > 0);
@@ -56,7 +57,7 @@ export class IdeaNodeComponent {
 
   cancelAddChild() { this.addingChild.set(false); }
 
-  onAddChild(event: { parentId: number; title: string }) { this.addChild.emit(event); }
+  onAddChild(event: { parentId: number; title: string })                   { this.addChild.emit(event); }
   onEditNode(event: { id: number; title: string; content: string | null }) { this.editNode.emit(event); }
-  onDeleteNode(id: number) { this.deleteNode.emit(id); }
+  onDeleteNode(id: number)                                                  { this.deleteNode.emit(id); }
 }
