@@ -6,37 +6,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "idea_node")
+@Table(name = "task")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class IdeaNode {
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idea_node_id", nullable = false)
+    private IdeaNode ideaNode;
+
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private IdeaNode parent;
-
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("position ASC")
+    @Column(nullable = false)
     @Builder.Default
-    private List<IdeaNode> children = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ideaNode", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("position ASC")
-    @Builder.Default
-    private List<Task> tasks = new ArrayList<>();
+    private Boolean completed = false;
 
     @Column(nullable = false)
     @Builder.Default
