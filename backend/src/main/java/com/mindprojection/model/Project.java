@@ -10,30 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "task")
+@Table(name = "project")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Task {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idea_node_id", nullable = false)
-    private IdeaNode ideaNode;
-
     @Column(nullable = false)
-    private String title;
+    private String name;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean completed = false;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer position = 0;
-
-    @ManyToMany(mappedBy = "tasks")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position ASC")
     @Builder.Default
     private List<Ticket> tickets = new ArrayList<>();
 
