@@ -35,6 +35,11 @@ export class ProjectsComponent implements OnInit {
   ticketFormPrio  = signal<'LOW'|'MEDIUM'|'HIGH'>('MEDIUM');
   ticketFormStatus = signal<'TODO'|'IN_PROGRESS'|'DONE'>('TODO');
 
+  editingTicketId   = signal<number | null>(null);
+  editTicketTitle   = signal('');
+  editTicketDesc    = signal('');
+  editTicketPrio    = signal<'LOW'|'MEDIUM'|'HIGH'>('MEDIUM');
+
   selected = computed(() => this.projects().find(p => p.id === this.selectedId()) ?? null);
 
   ticketsByStatus(status: string): Ticket[] {
@@ -87,6 +92,26 @@ export class ProjectsComponent implements OnInit {
       priority: this.ticketFormPrio(),
       status: this.ticketFormStatus()
     }).subscribe(() => { this.resetTicketForm(); this.load(); });
+  }
+
+  startEditTicket(ticket: Ticket) {
+    this.editingTicketId.set(ticket.id);
+    this.editTicketTitle.set(ticket.title);
+    this.editTicketDesc.set(ticket.description ?? '');
+    this.editTicketPrio.set(ticket.priority as 'LOW'|'MEDIUM'|'HIGH');
+  }
+
+  cancelEditTicket() { this.editingTicketId.set(null); }
+
+  saveEditTicket(ticket: Ticket) {
+    const title = this.editTicketTitle().trim();
+    if (!title) return;
+    this.svc.updateTicket(ticket.id, {
+      title,
+      description: this.editTicketDesc().trim() || null,
+      priority: this.editTicketPrio(),
+      status: ticket.status
+    }).subscribe(() => { this.editingTicketId.set(null); this.load(); });
   }
 
   moveTicket(ticket: Ticket, status: 'TODO'|'IN_PROGRESS'|'DONE') {
