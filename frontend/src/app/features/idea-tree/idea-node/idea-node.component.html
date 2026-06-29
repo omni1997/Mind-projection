@@ -1,17 +1,16 @@
 <div class="node-wrapper">
   <div class="node-row">
-
-    <button class="toggle-btn" (click)="toggleCollapse()" [disabled]="!hasChildren()">
-      {{ hasChildren() ? (collapsed() ? '▶' : '▼') : '·' }}
+    <button class="toggle-btn" (click)="toggleCollapse()" [disabled]="!hasChildren() && tasks().length === 0">
+      {{ (hasChildren() || tasks().length > 0) ? (collapsed() ? '▶' : '▼') : '·' }}
     </button>
 
     @if (editing()) {
       <div class="edit-form">
         <input [ngModel]="editTitle()" (ngModelChange)="editTitle.set($event)"
-               class="input-title" placeholder="Titre"
+               class="input-title" placeholder="Title"
                (keyup.enter)="confirmEdit()" (keyup.escape)="cancelEdit()" autofocus />
         <input [ngModel]="editContent()" (ngModelChange)="editContent.set($event)"
-               class="input-content" placeholder="Contenu (optionnel)"
+               class="input-content" placeholder="Content (optional)"
                (keyup.escape)="cancelEdit()" />
         <button class="btn btn-confirm" (click)="confirmEdit()">✓</button>
         <button class="btn btn-cancel"  (click)="cancelEdit()">✕</button>
@@ -22,9 +21,10 @@
         <span class="node-content">{{ node().content }}</span>
       }
       <div class="node-actions">
-        <button class="btn btn-add"    title="Ajouter enfant" (click)="startAddChild()">+</button>
-        <button class="btn btn-edit"   title="Modifier"       (click)="startEdit()">✎</button>
-        <button class="btn btn-delete" title="Supprimer"      (click)="deleteNode.emit(node().id)">✕</button>
+        <button class="btn btn-add"    title="Add child idea" (click)="startAddChild()">+ Idea</button>
+        <button class="btn btn-task"   title="Add task"       (click)="startAddTask()">+ Task</button>
+        <button class="btn btn-edit"   title="Edit"           (click)="startEdit()">✎</button>
+        <button class="btn btn-delete" title="Delete"         (click)="deleteNode.emit(node().id)">✕</button>
       </div>
     }
   </div>
@@ -32,23 +32,47 @@
   @if (addingChild()) {
     <div class="add-child-form">
       <input [ngModel]="newChildTitle()" (ngModelChange)="newChildTitle.set($event)"
-             class="input-title" placeholder="Nouvelle idée..."
+             class="input-title" placeholder="New idea..."
              (keyup.enter)="confirmAddChild()" (keyup.escape)="cancelAddChild()" autofocus />
       <button class="btn btn-confirm" (click)="confirmAddChild()">✓</button>
       <button class="btn btn-cancel"  (click)="cancelAddChild()">✕</button>
     </div>
   }
 
-  @if (!collapsed() && hasChildren()) {
-    <div class="children">
-      @for (child of node().children; track child.id) {
-        <app-idea-node
-          [node]="child"
-          (addChild)="onAddChild($event)"
-          (editNode)="onEditNode($event)"
-          (deleteNode)="onDeleteNode($event)"
-        />
-      }
+  @if (addingTask()) {
+    <div class="add-task-form">
+      <input [ngModel]="newTaskTitle()" (ngModelChange)="newTaskTitle.set($event)"
+             class="input-title" placeholder="New task..."
+             (keyup.enter)="confirmAddTask()" (keyup.escape)="cancelAddTask()" autofocus />
+      <button class="btn btn-confirm" (click)="confirmAddTask()">✓</button>
+      <button class="btn btn-cancel"  (click)="cancelAddTask()">✕</button>
     </div>
+  }
+
+  @if (!collapsed()) {
+    @if (tasks().length > 0) {
+      <div class="task-list">
+        @for (task of tasks(); track task.id) {
+          <div class="task-row" [class.completed]="task.completed">
+            <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)" class="task-check" />
+            <span class="task-title">{{ task.title }}</span>
+            <button class="btn btn-delete task-delete" title="Delete task" (click)="deleteTask(task)">✕</button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (hasChildren()) {
+      <div class="children">
+        @for (child of node().children; track child.id) {
+          <app-idea-node
+            [node]="child"
+            (addChild)="onAddChild($event)"
+            (editNode)="onEditNode($event)"
+            (deleteNode)="onDeleteNode($event)"
+          />
+        }
+      </div>
+    }
   }
 </div>
