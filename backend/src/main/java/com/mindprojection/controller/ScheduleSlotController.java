@@ -26,9 +26,14 @@ public class ScheduleSlotController {
         return service.getByRange(start, end);
     }
 
+    @GetMapping("/by-idea/{ideaNodeId}")
+    public List<ScheduleSlotDto> getByIdea(@PathVariable Long ideaNodeId) {
+        return service.getByIdeaNode(ideaNodeId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleSlotDto create(@Valid @RequestBody ScheduleSlotRequest req) {
+    public List<ScheduleSlotDto> create(@Valid @RequestBody ScheduleSlotRequest req) {
         return service.create(req);
     }
 

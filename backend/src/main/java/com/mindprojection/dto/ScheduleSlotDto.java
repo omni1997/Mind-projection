@@ -9,6 +9,8 @@ public record ScheduleSlotDto(
         OffsetDateTime startTime,
         OffsetDateTime endTime,
         String recurrence,
+        Long ideaNodeId,
+        String ideaNodeTitle,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {}

@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface ScheduleSlotRepository extends JpaRepository<ScheduleSlot, Long> {
 
-    @Query("SELECT s FROM ScheduleSlot s WHERE s.startTime < :end AND s.endTime > :start ORDER BY s.startTime ASC")
+    @Query("SELECT s FROM ScheduleSlot s LEFT JOIN FETCH s.ideaNode WHERE s.startTime < :end AND s.endTime > :start ORDER BY s.startTime ASC")
     List<ScheduleSlot> findByRange(@Param("start") OffsetDateTime start, @Param("end") OffsetDateTime end);
+
+    @Query("SELECT s FROM ScheduleSlot s LEFT JOIN FETCH s.ideaNode WHERE s.ideaNode.id = :ideaNodeId ORDER BY s.startTime ASC")
+    List<ScheduleSlot> findByIdeaNodeId(@Param("ideaNodeId") Long ideaNodeId);
 }

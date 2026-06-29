@@ -11,5 +11,6 @@ public record ScheduleSlotRequest(
         String description,
         @NotNull OffsetDateTime startTime,
         @NotNull OffsetDateTime endTime,
-        String recurrence
+        String recurrence,
+        Long ideaNodeId
 ) {}

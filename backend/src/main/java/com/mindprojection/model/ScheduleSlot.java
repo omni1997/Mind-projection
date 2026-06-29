@@ -31,6 +31,10 @@ public class ScheduleSlot {
     @Column(length = 50)
     private String recurrence;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idea_node_id")
+    private IdeaNode ideaNode;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
