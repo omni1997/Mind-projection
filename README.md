@@ -8,6 +8,14 @@ App de gestion d'idées, planning et tickets.
 - **Scheduler** — création et gestion d'emploi du temps
 - **Project Manager** — gestion de projets avec tickets (Kanban)
 
+## Screenshots
+
+| Idea Tree | Scheduler |
+|-----------|-----------|
+| ![Idea Tree](docs/screenshots/idea-tree.png) | ![Scheduler](docs/screenshots/scheduler.png) |
+
+![Projects Kanban](docs/screenshots/projects.png)
+
 ## Stack
 
 | Couche | Technologie |
